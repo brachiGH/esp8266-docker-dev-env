@@ -39,3 +39,10 @@ docker run -it --rm \
 -v "$(pwd)":/projects \
 esp8266-dev-env
 ```
+## Flash 
+
+Note you can flash your esp using the `flashnow` command. WHich is an aleas for
+
+```bash
+make -j4 app-flash monitor
+```
