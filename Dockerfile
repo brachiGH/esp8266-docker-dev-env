@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-LABEL version="1.0"
+LABEL version="1.1"
 LABEL maintainer="BrachiGH <https://github.com/brachiGH>"
 
 # Install dependencies in a single layer
@@ -18,21 +18,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create for a shared the projects directory
 VOLUME /projects
 
-# Clone SDK && ESPRESSIF environment install
+# Clone SDK && install SDK
 RUN mkdir /esp
 WORKDIR /esp
 
 RUN git clone --recursive https://github.com/espressif/ESP8266_RTOS_SDK.git
 ENV IDF_PATH=/esp/ESP8266_RTOS_SDK
+RUN cd ESP8266_RTOS_SDK && chmod +x ./install.sh && ./install.sh
 
-ARG XTENSAFILE=xtensa-lx106-elf-gcc8_4_0-esp-2020r3-linux-amd64.tar.gz
-RUN wget https://dl.espressif.com/dl/$XTENSAFILE
-RUN tar xzf ./$XTENSAFILE
-RUN rm $XTENSAFILE
-ENV PATH="/esp/xtensa-lx106-elf/bin:${PATH}"
+# create an entrypoint script.
+RUN echo '#!/bin/bash\n. /esp/ESP8266_RTOS_SDK/export.sh\nexec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+
+# Custom alias for flashing and monitoring
+RUN echo "alias flashnow='make -j4 app-flash monitor'" >> /root/.zshrc
 
 #Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
-
 WORKDIR /projects
 CMD ["zsh"]
