@@ -39,11 +39,16 @@ docker run -it --rm \
 -v "$(pwd)":/projects \
 esp8266-dev-env
 ```
-## Flash 
+## Flash and run RTOS examples
 
-Note you can flash your esp using the `flashnow` command. WHich is an aleas for
+You can find examples in (the offical esp8266 rtos sdk)[https://github.com/espressif/ESP8266_RTOS_SDK/tree/master/examples], which you can flash using the `flashnow` command. But fist configuring the Project using `make menuconfig`
 
 ```bash
-make -j4 app-flash monitor
+flashnow
+make menuconfig
 ```
-> note: `Ctrl + ]` Exit the program
+
+> note:
+>  - `flashnow` is an aleas for `make -j4 app-flash monitor`
+>  - `Ctrl + ]` Exit the monitoring program
+>  - To find information on your esp configuration you can install `esptool` using `python -m pip install esptool` and run `esptool chip-id ` then look up your Chip type datasheet.
