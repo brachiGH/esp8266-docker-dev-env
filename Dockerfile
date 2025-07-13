@@ -1,42 +1,32 @@
-FROM ubuntu:25.04
+FROM ubuntu:22.04
 
 LABEL version="1.0"
 LABEL maintainer="BrachiGH <https://github.com/brachiGH>"
 
-ARG USER=esp8266
-
-RUN apt-get update && apt-get install -y \
+# Install dependencies in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential git wget curl unzip sudo sed \
-        libncurses-dev flex bison gperf libusb-0.1-4 \
+        libncurses5-dev libncursesw5-dev flex bison gperf libusb-0.1-4 pkg-config \
         python3 python-is-python3 python3-pip python3-setuptools \
-        python3-cryptography python3-serial cmake \
-        gcc g++ nano neovim zsh \ 
-        && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+        python3-cryptography python3-serial python3-click \
+        python3-future python3-pyelftools \
+        cmake gcc g++ nano neovim zsh \
+    && pip install "pyparsing>=2.0.3,<2.4.0" \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g 1001 -r $USER
-RUN useradd -u 1001 -g 1001 --create-home -r $USER
-
-#Change password
-RUN echo "$USER:$USER" | chpasswd
-
-#Make sudo passwordless
-RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-$USER
-
-RUN mkdir ~/esp && cd ~/esp && git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
-
-ENV IDF_PATH=/home/$USER/esp/ESP8266_RTOS_SDK
-
-RUN mkdir /projects
+# Create for a shared the projects directory
 VOLUME /projects
-RUN chown $USER:$USER /projects
 
-USER $USER
+# Clone SDK
+WORKDIR /
+RUN git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
+
+#Install Oh My Zsh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
+
+# Set environment variables and default working directory
+ENV IDF_PATH=/ESP8266_RTOS_SDK
 
 WORKDIR /projects
-
-
-RUN touch ~/.zshrc && \
-     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
-
 CMD ["zsh"]
