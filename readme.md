@@ -41,11 +41,11 @@ esp8266-dev-env
 ```
 ## Flash and run RTOS examples
 
-You can find examples in (the offical esp8266 rtos sdk)[https://github.com/espressif/ESP8266_RTOS_SDK/tree/master/examples], which you can flash using the `flashnow` command. But fist configuring the Project using `make menuconfig`
+You can find examples in [the offical esp8266 rtos sdk](https://github.com/espressif/ESP8266_RTOS_SDK/tree/master/examples), which you can flash using the `flashnow` command. But fist configuring the Project using `make menuconfig`
 
 ```bash
-flashnow
 make menuconfig
+flashnow
 ```
 
 > note:
