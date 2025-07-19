@@ -32,7 +32,8 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 
 # Custom alias for flashing and monitoring
-RUN echo "alias flashnow='make -j4 app-flash monitor'" >> /root/.zshrc
+RUN echo "alias flashnow='idf.py app-flash monitor'" >> /root/.zshrc
+RUN echo "alias makenow='make -j4 app-flash monitor'" >> /root/.zshrc
 
 #Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
