@@ -24,7 +24,7 @@ WORKDIR /esp
 
 RUN git clone https://github.com/espressif/ESP8266_RTOS_SDK.git \
     && cd ESP8266_RTOS_SDK \
-    && git submodule update --init --recursive --remote
+    && git submodule update --init --recursive
 ENV IDF_PATH=/esp/ESP8266_RTOS_SDK
 RUN cd ESP8266_RTOS_SDK && git switch release/v3.4 && chmod +x ./install.sh && ./install.sh
 
