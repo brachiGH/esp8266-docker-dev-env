@@ -22,20 +22,21 @@ VOLUME /projects
 RUN mkdir /esp
 WORKDIR /esp
 
-RUN git clone --recursive https://github.com/espressif/ESP8266_RTOS_SDK.git
+RUN git clone https://github.com/espressif/ESP8266_RTOS_SDK.git \
+    && cd ESP8266_RTOS_SDK \
+    && git submodule update --init --recursive --remote
 ENV IDF_PATH=/esp/ESP8266_RTOS_SDK
-RUN cd ESP8266_RTOS_SDK && chmod +x ./install.sh && ./install.sh
+RUN cd ESP8266_RTOS_SDK && git switch release/v3.4 && chmod +x ./install.sh && ./install.sh
 
 # create an entrypoint script.
 RUN echo '#!/bin/bash\n. /esp/ESP8266_RTOS_SDK/export.sh\nexec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-
-# Custom alias for flashing and monitoring
-RUN echo "alias flashnow='idf.py app-flash monitor'" >> /root/.zshrc
-RUN echo "alias makenow='make -j4 app-flash monitor'" >> /root/.zshrc
-
 #Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
+# Custom alias for flashing and monitoring
+RUN echo "alias flashnow='idf.py app-flash monitor'\nalias makenow='make -j4 app-flash monitor'" >> /root/.zshrc
+
+
 WORKDIR /projects
 CMD ["zsh"]
