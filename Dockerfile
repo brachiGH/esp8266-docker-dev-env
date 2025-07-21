@@ -22,11 +22,13 @@ VOLUME /projects
 RUN mkdir /esp
 WORKDIR /esp
 
-RUN git clone https://github.com/espressif/ESP8266_RTOS_SDK.git \
-    && cd ESP8266_RTOS_SDK \
-    && git submodule update --init --recursive
+ARG ESP8266_RTOS_SDK_FILE=ESP8266_RTOS_SDK-v3.4.zip
+ARG ESP8266_RTOS_SDK_RELEASE=v3.4
+RUN wget https://github.com/espressif/ESP8266_RTOS_SDK/releases/download/$ESP8266_RTOS_SDK_RELEASE/$ESP8266_RTOS_SDK_FILE
+RUN unzip $ESP8266_RTOS_SDK_FILE
 ENV IDF_PATH=/esp/ESP8266_RTOS_SDK
-RUN cd ESP8266_RTOS_SDK && git switch release/v3.4 && chmod +x ./install.sh && ./install.sh
+RUN cd ESP8266_RTOS_SDK \
+    && chmod +x ./install.sh && ./install.sh
 
 # create an entrypoint script.
 RUN echo '#!/bin/bash\n. /esp/ESP8266_RTOS_SDK/export.sh\nexec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
